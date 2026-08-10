@@ -27,7 +27,6 @@
       color: #2c3e50;
     }
 
-    /* 共通カードスタイル */
     .card {
       background: white;
       border-radius: 8px;
@@ -36,7 +35,6 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* ボタン */
     .btn {
       display: inline-block;
       width: 100%;
@@ -52,11 +50,14 @@
       transition: background-color 0.2s;
     }
 
-    .btn:hover {
-      background-color: #2980b9;
-    }
+    .btn:hover { background-color: #2980b9; }
 
-    /* モード選択画面 */
+    .btn-secondary {
+      background-color: #7f8c8d;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover { background-color: #6c7a89; }
+
     .mode-select {
       display: flex;
       gap: 12px;
@@ -80,7 +81,6 @@
       color: #2980b9;
     }
 
-    /* 問題画面 */
     .quiz-header {
       display: flex;
       justify-content: space-between;
@@ -114,15 +114,9 @@
       background: #e8f4fc;
     }
 
-    .quiz-item .title {
-      font-weight: bold;
-      flex-grow: 1;
-    }
+    .quiz-item .title { font-weight: bold; flex-grow: 1; }
 
-    .controls {
-      display: flex;
-      gap: 4px;
-    }
+    .controls { display: flex; gap: 4px; }
 
     .btn-arrow {
       background: #eee;
@@ -132,12 +126,8 @@
       cursor: pointer;
       font-weight: bold;
     }
+    .btn-arrow:hover { background: #ddd; }
 
-    .btn-arrow:hover {
-      background: #ddd;
-    }
-
-    /* 結果解説表示 */
     .result-badge {
       display: inline-block;
       padding: 4px 8px;
@@ -147,21 +137,49 @@
       margin-bottom: 8px;
     }
 
-    .badge-correct {
-      background-color: #2ecc71;
-      color: white;
+    .badge-correct { background-color: #2ecc71; color: white; }
+    .badge-wrong { background-color: #e74c3c; color: white; }
+
+    /* 回答比較レイアウト */
+    .compare-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    @media (min-width: 600px) {
+      .compare-container {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
-    .badge-wrong {
-      background-color: #e74c3c;
-      color: white;
+    .user-answer-box {
+      background: #fff5f5;
+      border: 1px solid #feb2b2;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .user-answer-box h4 {
+      color: #c53030;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .user-answer-list {
+      list-style: none;
+      font-size: 0.85rem;
+    }
+
+    .user-answer-list li {
+      padding: 4px 0;
+      border-bottom: 1px dashed #fbb6ce;
     }
 
     .answer-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-top: 12px;
     }
 
     .answer-card {
@@ -179,10 +197,7 @@
       margin-bottom: 4px;
     }
 
-    .answer-date {
-      color: #e67e22;
-      font-size: 0.9rem;
-    }
+    .answer-date { color: #e67e22; font-size: 0.9rem; }
 
     .answer-exp {
       font-size: 0.85rem;
@@ -193,15 +208,18 @@
       border-top: 1px dashed #eee;
     }
 
-    .hidden {
-      display: none !important;
+    /* 一覧・図鑑モード用 */
+    .search-bar {
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
     }
 
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-    }
+    .hidden { display: none !important; }
+    .loading { text-align: center; padding: 20px; color: #666; }
   </style>
 </head>
 <body>
@@ -215,7 +233,7 @@
 
   <!-- 2. 設定画面 -->
   <div id="screen-setup" class="card hidden">
-    <h2>難易度を選択</h2>
+    <h2>モードを選択</h2>
     <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">1セット全5問です。</p>
     <div class="mode-select">
       <button class="mode-btn active" data-mode="easy">
@@ -228,6 +246,7 @@
       </button>
     </div>
     <button id="btn-start-quiz" class="btn">クイズスタート</button>
+    <button id="btn-open-browse" class="btn btn-secondary">イベント一覧（解説を見る）</button>
   </div>
 
   <!-- 3. 問題画面 -->
@@ -237,17 +256,23 @@
       <span id="quiz-mode-label">かんたん</span>
     </div>
     <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">古い順（上が古い）に並び替えてください。</p>
-    
     <div id="quiz-list" class="item-list"></div>
-
     <button id="btn-submit-answer" class="btn">回答する</button>
   </div>
 
   <!-- 4. 各問の解答・解説画面 -->
   <div id="screen-feedback" class="card hidden">
     <div id="feedback-badge" class="result-badge">正解！</div>
+    
+    <!-- 自分の回答（不正解時のみ表示） -->
+    <div id="user-answer-container" class="user-answer-box hidden" style="margin-bottom: 12px;">
+      <h4>あなたの回答（上から古い順）:</h4>
+      <ol id="user-answer-list" class="user-answer-list" style="margin-left: 20px;"></ol>
+    </div>
+
     <h3>正解の順番と解説</h3>
-    <div id="feedback-list" class="answer-list"></div>
+    <div id="feedback-list" class="answer-list" style="margin-top: 8px;"></div>
+    
     <button id="btn-next-question" class="btn" style="margin-top: 16px;">次の問題へ</button>
   </div>
 
@@ -260,6 +285,15 @@
     <button id="btn-restart" class="btn">もう一度挑戦する</button>
   </div>
 
+  <!-- 6. イベント一覧・図鑑画面 -->
+  <div id="screen-browse" class="card hidden">
+    <h2>登録イベント一覧</h2>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">登録済みの全イベントと解説を時系列順に確認できます。</p>
+    <input type="text" id="browse-search" class="search-bar" placeholder="キーワードで検索...">
+    <div id="browse-list" class="answer-list"></div>
+    <button id="btn-close-browse" class="btn btn-secondary" style="margin-top: 16px;">メニューに戻る</button>
+  </div>
+
   <script>
     let eventsData = [];
     let explanationsMap = {};
@@ -268,14 +302,16 @@
     let currentQuestionIndex = 0;
     let questions = [];
     let score = 0;
+    let lastUserAnswerTitles = [];
 
     const screenLoading = document.getElementById('screen-loading');
     const screenSetup = document.getElementById('screen-setup');
     const screenQuiz = document.getElementById('screen-quiz');
     const screenFeedback = document.getElementById('screen-feedback');
     const screenResult = document.getElementById('screen-result');
+    const screenBrowse = document.getElementById('screen-browse');
 
-    // 起動時にリポジトリ内のJSONを自動読み込み
+    // 初期データの読み込み
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const [eventsRes, expRes] = await Promise.all([
@@ -283,9 +319,7 @@
           fetch('./explanations.json')
         ]);
 
-        if (!eventsRes.ok || !expRes.ok) {
-          throw new Error('JSONファイルの取得に失敗しました。');
-        }
+        if (!eventsRes.ok || !expRes.ok) throw new Error('JSON取得失敗');
 
         eventsData = await eventsRes.json();
         const expArray = await expRes.json();
@@ -295,12 +329,13 @@
           explanationsMap[item.event_id] = item.explanation;
         });
 
+        // 時系列順に整列
         eventsData.sort((a, b) => a.sort_order - b.sort_order);
 
         screenLoading.classList.add('hidden');
         screenSetup.classList.remove('hidden');
       } catch (err) {
-        screenLoading.innerHTML = '<p style="color: red;">JSONデータの読み込みに失敗しました。<br>events.json と explanations.json が同じフォルダにあるか確認してください。</p>';
+        screenLoading.innerHTML = '<p style="color: red;">JSONデータの読み込みに失敗しました。</p>';
         console.error(err);
       }
     });
@@ -323,6 +358,47 @@
       screenSetup.classList.add('hidden');
       showQuestion();
     });
+
+    // イベント一覧表示
+    document.getElementById('btn-open-browse').addEventListener('click', () => {
+      screenSetup.classList.add('hidden');
+      screenBrowse.classList.remove('hidden');
+      renderBrowseList('');
+    });
+
+    document.getElementById('btn-close-browse').addEventListener('click', () => {
+      screenBrowse.classList.add('hidden');
+      screenSetup.classList.remove('hidden');
+    });
+
+    document.getElementById('browse-search').addEventListener('input', (e) => {
+      renderBrowseList(e.target.value);
+    });
+
+    function renderBrowseList(keyword) {
+      const container = document.getElementById('browse-list');
+      container.innerHTML = '';
+
+      const filtered = eventsData.filter(item => {
+        const exp = explanationsMap[item.id] || '';
+        const targetText = (item.title + item.date_display + exp).toLowerCase();
+        return targetText.includes(keyword.toLowerCase());
+      });
+
+      filtered.forEach((item, index) => {
+        const expText = explanationsMap[item.id] || '解説データがありません。';
+        const card = document.createElement('div');
+        card.className = 'answer-card';
+        card.innerHTML = `
+          <div class="answer-header">
+            <span>${index + 1}. ${item.title}</span>
+            <span class="answer-date">${item.date_display}</span>
+          </div>
+          <div class="answer-exp">${expText}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
     // 問題生成
     function generateQuizSet() {
@@ -396,7 +472,6 @@
     // 上下ボタン
     function setupArrowButtons() {
       const quizList = document.getElementById('quiz-list');
-      
       quizList.querySelectorAll('.btn-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -460,8 +535,10 @@
     // 回答判定
     document.getElementById('btn-submit-answer').addEventListener('click', () => {
       const currentList = document.getElementById('quiz-list');
-      const userOrderIds = [...currentList.querySelectorAll('.quiz-item')].map(el => el.dataset.id);
-      
+      const userItems = [...currentList.querySelectorAll('.quiz-item')];
+      const userOrderIds = userItems.map(el => el.dataset.id);
+      lastUserAnswerTitles = userItems.map(el => el.querySelector('.title').textContent);
+
       const q = questions[currentQuestionIndex];
       const correctIds = q.correctOrder.map(item => item.id);
 
@@ -472,14 +549,28 @@
       screenFeedback.classList.remove('hidden');
 
       const badge = document.getElementById('feedback-badge');
+      const userAnswerBox = document.getElementById('user-answer-container');
+
       if (isCorrect) {
         badge.textContent = '正解！';
         badge.className = 'result-badge badge-correct';
+        userAnswerBox.classList.add('hidden');
       } else {
         badge.textContent = '不正解…';
         badge.className = 'result-badge badge-wrong';
+        
+        // 自分の回答を表示
+        const userAnswerList = document.getElementById('user-answer-list');
+        userAnswerList.innerHTML = '';
+        lastUserAnswerTitles.forEach(title => {
+          const li = document.createElement('li');
+          li.textContent = title;
+          userAnswerList.appendChild(li);
+        });
+        userAnswerBox.classList.remove('hidden');
       }
 
+      // 模範解答表示
       const feedbackList = document.getElementById('feedback-list');
       feedbackList.innerHTML = '';
 
@@ -496,6 +587,14 @@
         `;
         feedbackList.appendChild(card);
       });
+
+      // 5問目ならボタンテキストを変更
+      const nextBtn = document.getElementById('btn-next-question');
+      if (currentQuestionIndex === 4) {
+        nextBtn.textContent = '結果を表示';
+      } else {
+        nextBtn.textContent = '次の問題へ';
+      }
     });
 
     // 次の問題 / 結果

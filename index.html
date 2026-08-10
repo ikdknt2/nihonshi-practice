@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>歴史並び替えトレーニング</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f8;
+      color: #333;
+      padding: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      color: #2c3e50;
+    }
+
+    /* 共通カードスタイル */
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* ボタン */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-secondary {
+      background-color: #95a5a6;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #7f8c8d;
+    }
+
+    /* ファイル読み込み画面 */
+    #file-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .file-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .file-group label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* モード選択画面 */
+    .mode-select {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 12px;
+      background: #ecf0f1;
+      border: 2px solid #bdc3c7;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .mode-btn.active {
+      background: #e8f4fc;
+      border-color: #3498db;
+      color: #2980b9;
+    }
+
+    /* 問題画面 */
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #7f8c8d;
+    }
+
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 12px;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .quiz-item.dragging {
+      opacity: 0.5;
+      background: #e8f4fc;
+    }
+
+    .quiz-item .title {
+      font-weight: bold;
+      flex-grow: 1;
+    }
+
+    .controls {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-arrow {
+      background: #eee;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-arrow:hover {
+      background: #ddd;
+    }
+
+    /* 結果解説表示 */
+    .result-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .badge-correct {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .badge-wrong {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .answer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .answer-card {
+      border: 1px solid #e0e0e0;
+      border-left: 5px solid #3498db;
+      border-radius: 4px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .answer-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .answer-date {
+      color: #e67e22;
+      font-size: 0.9rem;
+    }
+
+    .answer-exp {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.4;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #eee;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>歴史並び替えトレーニング</h1>
+
+  <!-- 1. ファイルアップロード画面 -->
+  <div id="screen-upload" class="card">
+    <h2>JSONファイルを読み込んでください</h2>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">準備した `events.json` と `explanations.json` を選択してください。</p>
+    <div id="file-inputs">
+      <div class="file-group">
+        <label>1. イベントデータ (events.json)</label>
+        <input type="file" id="file-events" accept=".json">
+      </div>
+      <div class="file-group">
+        <label>2. 解説データ (explanations.json)</label>
+        <input type="file" id="file-explanations" accept=".json">
+      </div>
+      <button id="btn-load-data" class="btn" style="margin-top: 8px;">アプリを開始する</button>
+    </div>
+  </div>
+
+  <!-- 2. 設定画面 -->
+  <div id="screen-setup" class="card hidden">
+    <h2>難易度を選択</h2>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">1セット全5問です。</p>
+    <div class="mode-select">
+      <button class="mode-btn active" data-mode="easy">
+        かんたん<br>
+        <span style="font-size: 0.75rem; font-weight: normal;">全期間からランダム</span>
+      </button>
+      <button class="mode-btn" data-mode="hard">
+        むずかしい<br>
+        <span style="font-size: 0.75rem; font-weight: normal;">前後狭い範囲から抽出</span>
+      </button>
+    </div>
+    <button id="btn-start-quiz" class="btn">クイズスタート</button>
+  </div>
+
+  <!-- 3. 問題画面 -->
+  <div id="screen-quiz" class="card hidden">
+    <div class="quiz-header">
+      <span id="quiz-progress">第 1 / 5 問</span>
+      <span id="quiz-mode-label">かんたん</span>
+    </div>
+    <p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">古い順（上が古い）に並び替えてください。</p>
+    
+    <div id="quiz-list" class="item-list"></div>
+
+    <button id="btn-submit-answer" class="btn">回答する</button>
+  </div>
+
+  <!-- 4. 各問の解答・解説画面 -->
+  <div id="screen-feedback" class="card hidden">
+    <div id="feedback-badge" class="result-badge">正解！</div>
+    <h3>正解の順番と解説</h3>
+    <div id="feedback-list" class="answer-list"></div>
+    <button id="btn-next-question" class="btn" style="margin-top: 16px;">次の問題へ</button>
+  </div>
+
+  <!-- 5. 最終結果画面 -->
+  <div id="screen-result" class="card hidden">
+    <h2 style="text-align: center;">結果発表</h2>
+    <div style="font-size: 2rem; font-weight: bold; text-align: center; margin: 16px 0; color: #2c3e50;" id="final-score">
+      5 問中 4 問正解！
+    </div>
+    <button id="btn-restart" class="btn">もう一度挑戦する</button>
+  </div>
+
+  <script>
+    // データ保持用
+    let eventsData = [];
+    let explanationsMap = {};
+
+    // クイズ状態
+    let currentMode = 'easy';
+    let currentQuestionIndex = 0;
+    let questions = [];
+    let score = 0;
+
+    // DOM要素
+    const screenUpload = document.getElementById('screen-upload');
+    const screenSetup = document.getElementById('screen-setup');
+    const screenQuiz = document.getElementById('screen-quiz');
+    const screenFeedback = document.getElementById('screen-feedback');
+    const screenResult = document.getElementById('screen-result');
+
+    // 1. ファイル読み込み処理
+    document.getElementById('btn-load-data').addEventListener('click', async () => {
+      const fileEvents = document.getElementById('file-events').files[0];
+      const fileExplanations = document.getElementById('file-explanations').files[0];
+
+      if (!fileEvents || !fileExplanations) {
+        alert('両方のJSONファイルを選択してください。');
+        return;
+      }
+
+      try {
+        const eventsText = await fileEvents.text();
+        const explanationsText = await fileExplanations.text();
+
+        eventsData = JSON.parse(eventsText);
+        const expArray = JSON.parse(explanationsText);
+
+        // 解説データをevent_idをキーにした連想配列に変換
+        explanationsMap = {};
+        expArray.forEach(item => {
+          explanationsMap[item.event_id] = item.explanation;
+        });
+
+        // ソート順（時系列順）に整列を確実にしておく
+        eventsData.sort((a, b) => a.sort_order - b.sort_order);
+
+        screenUpload.classList.add('hidden');
+        screenSetup.classList.remove('hidden');
+      } catch (err) {
+        alert('JSONファイルの読み込みまたは解析に失敗しました。フォーマットを確認してください。');
+        console.error(err);
+      }
+    });
+
+    // 2. モード選択
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        const target = e.currentTarget;
+        target.classList.add('active');
+        currentMode = target.getAttribute('data-mode');
+      });
+    });
+
+    // クイズ開始
+    document.getElementById('btn-start-quiz').addEventListener('click', () => {
+      generateQuizSet();
+      currentQuestionIndex = 0;
+      score = 0;
+      screenSetup.classList.add('hidden');
+      showQuestion();
+    });
+
+    // 3. 出題ロジック生成（5問分）
+    function generateQuizSet() {
+      questions = [];
+      const totalEvents = eventsData.length;
+
+      for (let q = 0; q < 5; q++) {
+        let picked = [];
+
+        if (currentMode === 'easy') {
+          // 全体から完全ランダムに4つ
+          const shuffled = [...eventsData].sort(() => 0.5 - Math.random());
+          picked = shuffled.slice(0, 4);
+        } else {
+          // むずかしい: 基準を1つ決め、時系列の前後10個以内から残り3つを選択
+          const baseIndex = Math.floor(Math.random() * totalEvents);
+          const range = 10;
+          const minIdx = Math.max(0, baseIndex - range);
+          const maxIdx = Math.min(totalEvents - 1, baseIndex + range);
+
+          const pool = eventsData.slice(minIdx, maxIdx + 1);
+          const shuffled = pool.sort(() => 0.5 - Math.random());
+          picked = shuffled.slice(0, 4);
+
+          // 万が一4個未満の場合は補填
+          if (picked.length < 4) {
+            const extra = eventsData.filter(e => !picked.includes(e)).sort(() => 0.5 - Math.random());
+            picked = picked.concat(extra.slice(0, 4 - picked.length));
+          }
+        }
+
+        // 正しい順番（sort_order順）
+        const correctOrder = [...picked].sort((a, b) => a.sort_order - b.sort_order);
+
+        // 出題用にシャッフル（初期表示順）
+        let initialOrder = [...picked].sort(() => 0.5 - Math.random());
+
+        questions.push({
+          correctOrder: correctOrder,
+          initialOrder: initialOrder
+        });
+      }
+    }
+
+    // 問題の表示
+    function showQuestion() {
+      screenFeedback.classList.add('hidden');
+      screenQuiz.classList.remove('hidden');
+
+      const q = questions[currentQuestionIndex];
+      document.getElementById('quiz-progress').textContent = `第 ${currentQuestionIndex + 1} / 5 問`;
+      document.getElementById('quiz-mode-label').textContent = currentMode === 'easy' ? 'かんたん' : 'むずかしい';
+
+      const quizList = document.getElementById('quiz-list');
+      quizList.innerHTML = '';
+
+      q.initialOrder.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-item';
+        div.draggable = true;
+        div.dataset.id = item.id;
+
+        div.innerHTML = `
+          <span class="title">${item.title}</span>
+          <div class="controls">
+            <button class="btn-arrow btn-up">▲</button>
+            <button class="btn-arrow btn-down">▼</button>
+          </div>
+        `;
+        quizList.appendChild(div);
+      });
+
+      setupDragAndDrop();
+      setupArrowButtons();
+    }
+
+    // 上下ボタンによる並び替え
+    function setupArrowButtons() {
+      const quizList = document.getElementById('quiz-list');
+      
+      quizList.querySelectorAll('.btn-up').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = e.target.closest('.quiz-item');
+          const prev = item.previousElementSibling;
+          if (prev) {
+            quizList.insertBefore(item, prev);
+          }
+        });
+      });
+
+      quizList.querySelectorAll('.btn-down').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const item = e.target.closest('.quiz-item');
+          const next = item.nextElementSibling;
+          if (next) {
+            quizList.insertBefore(next, item);
+          }
+        });
+      });
+    }
+
+    // ドラッグ＆ドロップ実装
+    function setupDragAndDrop() {
+      const quizList = document.getElementById('quiz-list');
+      let draggedItem = null;
+
+      quizList.querySelectorAll('.quiz-item').forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+          draggedItem = item;
+          item.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', () => {
+          draggedItem = null;
+          item.classList.remove('dragging');
+        });
+      });
+
+      quizList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(quizList, e.clientY);
+        if (afterElement == null) {
+          quizList.appendChild(draggedItem);
+        } else {
+          quizList.insertBefore(draggedItem, afterElement);
+        }
+      });
+    }
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.quiz-item:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    // 4. 解答チェックと解説表示
+    document.getElementById('btn-submit-answer').addEventListener('click', () => {
+      const currentList = document.getElementById('quiz-list');
+      const userOrderIds = [...currentList.querySelectorAll('.quiz-item')].map(el => el.dataset.id);
+      
+      const q = questions[currentQuestionIndex];
+      const correctIds = q.correctOrder.map(item => item.id);
+
+      const isCorrect = JSON.stringify(userOrderIds) === JSON.stringify(correctIds);
+      if (isCorrect) score++;
+
+      // フィードバック表示
+      screenQuiz.classList.add('hidden');
+      screenFeedback.classList.remove('hidden');
+
+      const badge = document.getElementById('feedback-badge');
+      if (isCorrect) {
+        badge.textContent = '正解！';
+        badge.className = 'result-badge badge-correct';
+      } else {
+        badge.textContent = '不正解…';
+        badge.className = 'result-badge badge-wrong';
+      }
+
+      // 模範解答リスト生成
+      const feedbackList = document.getElementById('feedback-list');
+      feedbackList.innerHTML = '';
+
+      q.correctOrder.forEach((item, index) => {
+        const expText = explanationsMap[item.id] || '解説データがありません。';
+        const card = document.createElement('div');
+        card.className = 'answer-card';
+        card.innerHTML = `
+          <div class="answer-header">
+            <span>${index + 1}. ${item.title}</span>
+            <span class="answer-date">${item.date_display}</span>
+          </div>
+          <div class="answer-exp">${expText}</div>
+        `;
+        feedbackList.appendChild(card);
+      });
+    });
+
+    // 次の問題へ / 結果画面へ
+    document.getElementById('btn-next-question').addEventListener('click', () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < 5) {
+        showQuestion();
+      } else {
+        // 結果発表
+        screenFeedback.classList.add('hidden');
+        screenResult.classList.remove('hidden');
+        document.getElementById('final-score').textContent = `5 問中 ${score} 問正解！`;
+      }
+    });
+
+    // リスタート
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      screenResult.classList.add('hidden');
+      screenSetup.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

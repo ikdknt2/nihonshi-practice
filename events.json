@@ -3,426 +3,426 @@
     "id": "event_001",
     "title": "大化の改新",
     "date_display": "645年",
-    "sort_order": 10
+    "sort_order": 1
   },
   {
     "id": "event_002",
     "title": "白村江の戦い",
     "date_display": "663年",
-    "sort_order": 20
+    "sort_order": 2
   },
   {
     "id": "event_002_5",
     "title": "壬申の乱",
     "date_display": "672年",
-    "sort_order": 25
+    "sort_order": 3
   },
   {
     "id": "event_003",
     "title": "大宝律令",
     "date_display": "701年",
-    "sort_order": 30
+    "sort_order": 4
+  },
+  {
+    "id": "event_005",
+    "title": "班田収授法の発布",
+    "date_display": "701年",
+    "sort_order": 5
   },
   {
     "id": "event_004",
     "title": "平城京遷都",
     "date_display": "710年",
-    "sort_order": 40
-  },
-  {
-    "id": "event_005",
-    "title": "班田収授法の発布",
-    "date_display": "701年〜",
-    "sort_order": 50
+    "sort_order": 6
   },
   {
     "id": "event_006",
     "title": "三世一身法",
     "date_display": "723年",
-    "sort_order": 60
+    "sort_order": 7
   },
   {
     "id": "event_007",
     "title": "墾田永年私財法",
     "date_display": "743年",
-    "sort_order": 70
+    "sort_order": 8
   },
   {
     "id": "event_008",
     "title": "長岡京遷都",
     "date_display": "784年",
-    "sort_order": 80
+    "sort_order": 9
   },
   {
     "id": "event_009",
     "title": "平安京遷都",
     "date_display": "794年",
-    "sort_order": 90
+    "sort_order": 10
   },
   {
     "id": "event_010",
     "title": "遣唐使の廃止（停止）",
     "date_display": "894年",
-    "sort_order": 100
+    "sort_order": 11
   },
   {
     "id": "event_011",
     "title": "平将門の乱",
     "date_display": "935年",
-    "sort_order": 110
+    "sort_order": 12
   },
   {
     "id": "event_012",
     "title": "藤原純友の乱",
     "date_display": "939年",
-    "sort_order": 120
+    "sort_order": 13
   },
   {
     "id": "event_013",
     "title": "前九年の役",
     "date_display": "1051年",
-    "sort_order": 130
+    "sort_order": 14
   },
   {
     "id": "event_014",
-    "title": "後三年年の役",
+    "title": "後三年の役",
     "date_display": "1083年",
-    "sort_order": 140
+    "sort_order": 15
   },
   {
     "id": "event_015",
     "title": "保元の乱",
     "date_display": "1156年",
-    "sort_order": 150
-  },
-  {
-    "id": "event_015_5",
-    "title": "壇ノ浦の戦い",
-    "date_display": "1185年",
-    "sort_order": 155
+    "sort_order": 16
   },
   {
     "id": "event_016",
     "title": "平治の乱",
     "date_display": "1159年",
-    "sort_order": 160
+    "sort_order": 17
+  },
+  {
+    "id": "event_015_5",
+    "title": "壇ノ浦の戦い",
+    "date_display": "1185年",
+    "sort_order": 18
   },
   {
     "id": "event_017",
     "title": "守護・地頭の設置許可",
     "date_display": "1185年",
-    "sort_order": 170
+    "sort_order": 19
   },
   {
     "id": "event_018",
     "title": "源頼朝が征夷大将軍に就任",
     "date_display": "1192年",
-    "sort_order": 180
+    "sort_order": 20
   },
   {
     "id": "event_019",
     "title": "承久の乱",
     "date_display": "1221年",
-    "sort_order": 190
+    "sort_order": 21
   },
   {
     "id": "event_020",
     "title": "御成敗式目の制定",
     "date_display": "1232年",
-    "sort_order": 200
+    "sort_order": 22
   },
   {
     "id": "event_021",
     "title": "文永の役（元寇）",
     "date_display": "1274年",
-    "sort_order": 210
-  },
-  {
-    "id": "event_021_5",
-    "title": "永仁の徳政令",
-    "date_display": "1297年",
-    "sort_order": 215
+    "sort_order": 23
   },
   {
     "id": "event_022",
     "title": "弘安の役（元寇）",
     "date_display": "1281年",
-    "sort_order": 220
+    "sort_order": 24
+  },
+  {
+    "id": "event_021_5",
+    "title": "永仁の徳政令",
+    "date_display": "1297年",
+    "sort_order": 25
   },
   {
     "id": "event_023",
     "title": "鎌倉幕府の滅亡",
     "date_display": "1333年",
-    "sort_order": 230
+    "sort_order": 26
   },
   {
     "id": "event_024",
     "title": "建武の新政",
     "date_display": "1334年",
-    "sort_order": 240
+    "sort_order": 27
   },
   {
     "id": "event_025",
     "title": "室町幕府の成立",
     "date_display": "1336年",
-    "sort_order": 250
+    "sort_order": 28
   },
   {
     "id": "event_026",
     "title": "南北朝の統一",
     "date_display": "1392年",
-    "sort_order": 260
+    "sort_order": 29
   },
   {
     "id": "event_027",
     "title": "応仁の乱",
     "date_display": "1467年",
-    "sort_order": 270
+    "sort_order": 30
   },
   {
     "id": "event_028",
     "title": "ポルトガル船のアフリカ南端（喜望峰）到達",
     "date_display": "1488年",
-    "sort_order": 280
-  },
-  {
-    "id": "event_028_5",
-    "title": "桶狭間の戦い",
-    "date_display": "1560年",
-    "sort_order": 285
+    "sort_order": 31
   },
   {
     "id": "event_029",
     "title": "コロンブスのアメリカ新大陸到達",
     "date_display": "1492年",
-    "sort_order": 290
+    "sort_order": 32
   },
   {
     "id": "event_030",
     "title": "ヴァスコ・ダ・ガマのインド到達",
     "date_display": "1498年",
-    "sort_order": 300
+    "sort_order": 33
   },
   {
     "id": "event_031",
     "title": "種子島への鉄砲伝来",
     "date_display": "1543年",
-    "sort_order": 310
+    "sort_order": 34
   },
   {
     "id": "event_032",
     "title": "フランシスコ・ザビエルの来日",
     "date_display": "1549年",
-    "sort_order": 320
+    "sort_order": 35
+  },
+  {
+    "id": "event_028_5",
+    "title": "桶狭間の戦い",
+    "date_display": "1560年",
+    "sort_order": 36
   },
   {
     "id": "event_033",
     "title": "室町幕府の滅亡",
     "date_display": "1573年",
-    "sort_order": 330
-  },
-  {
-    "id": "event_034",
-    "title": "天正遣欧使節の派遣",
-    "date_display": "1582年",
-    "sort_order": 340
-  },
-  {
-    "id": "event_035",
-    "title": "本能寺の変",
-    "date_display": "1582年",
-    "sort_order": 350
-  },
-  {
-    "id": "event_036",
-    "title": "太閤検地の開始",
-    "date_display": "1582年",
-    "sort_order": 360
+    "sort_order": 37
   },
   {
     "id": "event_037",
     "title": "長崎のイエズス会寄進",
     "date_display": "1580年",
-    "sort_order": 370
+    "sort_order": 38
+  },
+  {
+    "id": "event_034",
+    "title": "天正遣欧使節の派遣",
+    "date_display": "1582年",
+    "sort_order": 39
+  },
+  {
+    "id": "event_035",
+    "title": "本能寺の変",
+    "date_display": "1582年",
+    "sort_order": 40
+  },
+  {
+    "id": "event_036",
+    "title": "太閤検地の開始",
+    "date_display": "1582年",
+    "sort_order": 41
   },
   {
     "id": "event_038",
     "title": "バテレン追放令",
     "date_display": "1587年",
-    "sort_order": 380
+    "sort_order": 42
   },
   {
     "id": "event_039",
     "title": "豊臣秀吉の九州平定（島津氏降伏）",
     "date_display": "1587年",
-    "sort_order": 390
-  },
-  {
-    "id": "event_039_5",
-    "title": "関ヶ原の戦い",
-    "date_display": "1600年",
-    "sort_order": 395
+    "sort_order": 43
   },
   {
     "id": "event_040",
     "title": "刀狩令の発布",
     "date_display": "1588年",
-    "sort_order": 400
+    "sort_order": 44
   },
   {
     "id": "event_041",
     "title": "小田原征伐（北条氏滅亡・全国統一）",
     "date_display": "1590年",
-    "sort_order": 410
+    "sort_order": 45
   },
   {
     "id": "event_042",
     "title": "文禄の役（朝鮮出兵）",
     "date_display": "1592年",
-    "sort_order": 420
+    "sort_order": 46
   },
   {
     "id": "event_043",
     "title": "慶長の役（朝鮮出兵）",
     "date_display": "1597年",
-    "sort_order": 430
+    "sort_order": 47
+  },
+  {
+    "id": "event_039_5",
+    "title": "関ヶ原の戦い",
+    "date_display": "1600年",
+    "sort_order": 48
   },
   {
     "id": "event_044",
-    "title": "江戸幕府の開く",
+    "title": "江戸幕府の成立",
     "date_display": "1603年",
-    "sort_order": 440
-  },
-  {
-    "id": "event_045",
-    "title": "薩摩藩の琉球侵攻",
-    "date_display": "1609年",
-    "sort_order": 450
-  },
-  {
-    "id": "event_046",
-    "title": "直轄領（幕領）への禁教令",
-    "date_display": "1612年",
-    "sort_order": 460
-  },
-  {
-    "id": "event_047",
-    "title": "全国へのキリシタン禁教令",
-    "date_display": "1613年",
-    "sort_order": 470
-  },
-  {
-    "id": "event_048",
-    "title": "大坂冬の陣",
-    "date_display": "1614年",
-    "sort_order": 480
-  },
-  {
-    "id": "event_049",
-    "title": "大坂夏の陣",
-    "date_display": "1615年",
-    "sort_order": 490
-  },
-  {
-    "id": "event_050",
-    "title": "武家諸法度の制定",
-    "date_display": "1615年",
-    "sort_order": 500
-  },
-  {
-    "id": "event_051",
-    "title": "スペイン船の来航禁止",
-    "date_display": "1624年",
-    "sort_order": 510
-  },
-  {
-    "id": "event_052",
-    "title": "日本人の海外渡航・帰国の禁止",
-    "date_display": "1635年",
-    "sort_order": 520
-  },
-  {
-    "id": "event_052_5",
-    "title": "寛政の改革",
-    "date_display": "1787年",
-    "sort_order": 525
-  },
-  {
-    "id": "event_053",
-    "title": "島原・天草一揆",
-    "date_display": "1637年",
-    "sort_order": 530
-  },
-  {
-    "id": "event_054",
-    "title": "ポルトガル船の来航禁止",
-    "date_display": "1639年",
-    "sort_order": 540
-  },
-  {
-    "id": "event_055",
-    "title": "平戸のオランダ商館を出島へ移転",
-    "date_display": "1641年",
-    "sort_order": 550
+    "sort_order": 49
   },
   {
     "id": "event_056",
     "title": "松前藩のアイヌ貿易独占認可",
     "date_display": "1604年",
-    "sort_order": 560
+    "sort_order": 50
+  },
+  {
+    "id": "event_045",
+    "title": "薩摩藩の琉球侵攻",
+    "date_display": "1609年",
+    "sort_order": 51
+  },
+  {
+    "id": "event_046",
+    "title": "直轄領（幕領）への禁教令",
+    "date_display": "1612年",
+    "sort_order": 52
+  },
+  {
+    "id": "event_047",
+    "title": "全国へのキリシタン禁教令",
+    "date_display": "1613年",
+    "sort_order": 53
+  },
+  {
+    "id": "event_048",
+    "title": "大坂冬の陣",
+    "date_display": "1614年",
+    "sort_order": 54
+  },
+  {
+    "id": "event_049",
+    "title": "大坂夏の陣",
+    "date_display": "1615年",
+    "sort_order": 55
+  },
+  {
+    "id": "event_050",
+    "title": "武家諸法度の制定",
+    "date_display": "1615年",
+    "sort_order": 56
+  },
+  {
+    "id": "event_051",
+    "title": "スペイン船の来航禁止",
+    "date_display": "1624年",
+    "sort_order": 57
+  },
+  {
+    "id": "event_052",
+    "title": "日本人の海外渡航・帰国の禁止",
+    "date_display": "1635年",
+    "sort_order": 58
+  },
+  {
+    "id": "event_053",
+    "title": "島原・天草一揆",
+    "date_display": "1637年",
+    "sort_order": 59
+  },
+  {
+    "id": "event_054",
+    "title": "ポルトガル船の来航禁止",
+    "date_display": "1639年",
+    "sort_order": 60
+  },
+  {
+    "id": "event_055",
+    "title": "平戸のオランダ商館を出島へ移転",
+    "date_display": "1641年",
+    "sort_order": 61
   },
   {
     "id": "event_057",
     "title": "シャクシャインの戦い",
     "date_display": "1669年",
-    "sort_order": 570
+    "sort_order": 62
   },
   {
     "id": "event_058",
     "title": "享保の改革",
     "date_display": "1716年",
-    "sort_order": 580
+    "sort_order": 63
+  },
+  {
+    "id": "event_052_5",
+    "title": "寛政の改革",
+    "date_display": "1787年",
+    "sort_order": 64
   },
   {
     "id": "event_059",
     "title": "ラクスマンの根室来航",
     "date_display": "1792年",
-    "sort_order": 590
+    "sort_order": 65
   },
   {
     "id": "event_060",
     "title": "レザノフの長崎来航",
     "date_display": "1804年",
-    "sort_order": 600
+    "sort_order": 66
   },
   {
     "id": "event_061",
     "title": "フェートン号事件",
     "date_display": "1808年",
-    "sort_order": 610
+    "sort_order": 67
   },
   {
     "id": "event_062",
     "title": "異国船打払令（無二念打払令）",
     "date_display": "1825年",
-    "sort_order": 620
+    "sort_order": 68
   },
   {
     "id": "event_063",
     "title": "大塩平八郎の乱",
     "date_display": "1837年",
-    "sort_order": 630
+    "sort_order": 69
   },
   {
     "id": "event_064",
     "title": "天保の改革",
     "date_display": "1841年",
-    "sort_order": 640
+    "sort_order": 70
   },
   {
     "id": "event_065",
     "title": "異国船打払令の撤回（天保の薪水給与令）",
     "date_display": "1842年",
-    "sort_order": 650
+    "sort_order": 71
   }
 ]

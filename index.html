@@ -56,34 +56,6 @@
       background-color: #2980b9;
     }
 
-    .btn-secondary {
-      background-color: #95a5a6;
-      margin-top: 8px;
-    }
-
-    .btn-secondary:hover {
-      background-color: #7f8c8d;
-    }
-
-    /* ファイル読み込み画面 */
-    #file-inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .file-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .file-group label {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #555;
-    }
-
     /* モード選択画面 */
     .mode-select {
       display: flex;
@@ -224,27 +196,21 @@
     .hidden {
       display: none !important;
     }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
 
   <h1>歴史並び替えトレーニング</h1>
 
-  <!-- 1. ファイルアップロード画面 -->
-  <div id="screen-upload" class="card">
-    <h2>JSONファイルを読み込んでください</h2>
-    <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">準備した `events.json` と `explanations.json` を選択してください。</p>
-    <div id="file-inputs">
-      <div class="file-group">
-        <label>1. イベントデータ (events.json)</label>
-        <input type="file" id="file-events" accept=".json">
-      </div>
-      <div class="file-group">
-        <label>2. 解説データ (explanations.json)</label>
-        <input type="file" id="file-explanations" accept=".json">
-      </div>
-      <button id="btn-load-data" class="btn" style="margin-top: 8px;">アプリを開始する</button>
-    </div>
+  <!-- 1. 初期ロード画面 -->
+  <div id="screen-loading" class="card loading">
+    <p>データを読み込んでいます...</p>
   </div>
 
   <!-- 2. 設定画面 -->
@@ -295,58 +261,51 @@
   </div>
 
   <script>
-    // データ保持用
     let eventsData = [];
     let explanationsMap = {};
 
-    // クイズ状態
     let currentMode = 'easy';
     let currentQuestionIndex = 0;
     let questions = [];
     let score = 0;
 
-    // DOM要素
-    const screenUpload = document.getElementById('screen-upload');
+    const screenLoading = document.getElementById('screen-loading');
     const screenSetup = document.getElementById('screen-setup');
     const screenQuiz = document.getElementById('screen-quiz');
     const screenFeedback = document.getElementById('screen-feedback');
     const screenResult = document.getElementById('screen-result');
 
-    // 1. ファイル読み込み処理
-    document.getElementById('btn-load-data').addEventListener('click', async () => {
-      const fileEvents = document.getElementById('file-events').files[0];
-      const fileExplanations = document.getElementById('file-explanations').files[0];
-
-      if (!fileEvents || !fileExplanations) {
-        alert('両方のJSONファイルを選択してください。');
-        return;
-      }
-
+    // 起動時にリポジトリ内のJSONを自動読み込み
+    window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const eventsText = await fileEvents.text();
-        const explanationsText = await fileExplanations.text();
+        const [eventsRes, expRes] = await Promise.all([
+          fetch('./events.json'),
+          fetch('./explanations.json')
+        ]);
 
-        eventsData = JSON.parse(eventsText);
-        const expArray = JSON.parse(explanationsText);
+        if (!eventsRes.ok || !expRes.ok) {
+          throw new Error('JSONファイルの取得に失敗しました。');
+        }
 
-        // 解説データをevent_idをキーにした連想配列に変換
+        eventsData = await eventsRes.json();
+        const expArray = await expRes.json();
+
         explanationsMap = {};
         expArray.forEach(item => {
           explanationsMap[item.event_id] = item.explanation;
         });
 
-        // ソート順（時系列順）に整列を確実にしておく
         eventsData.sort((a, b) => a.sort_order - b.sort_order);
 
-        screenUpload.classList.add('hidden');
+        screenLoading.classList.add('hidden');
         screenSetup.classList.remove('hidden');
       } catch (err) {
-        alert('JSONファイルの読み込みまたは解析に失敗しました。フォーマットを確認してください。');
+        screenLoading.innerHTML = '<p style="color: red;">JSONデータの読み込みに失敗しました。<br>events.json と explanations.json が同じフォルダにあるか確認してください。</p>';
         console.error(err);
       }
     });
 
-    // 2. モード選択
+    // モード選択
     document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -365,7 +324,7 @@
       showQuestion();
     });
 
-    // 3. 出題ロジック生成（5問分）
+    // 問題生成
     function generateQuizSet() {
       questions = [];
       const totalEvents = eventsData.length;
@@ -374,11 +333,9 @@
         let picked = [];
 
         if (currentMode === 'easy') {
-          // 全体から完全ランダムに4つ
           const shuffled = [...eventsData].sort(() => 0.5 - Math.random());
           picked = shuffled.slice(0, 4);
         } else {
-          // むずかしい: 基準を1つ決め、時系列の前後10個以内から残り3つを選択
           const baseIndex = Math.floor(Math.random() * totalEvents);
           const range = 10;
           const minIdx = Math.max(0, baseIndex - range);
@@ -388,17 +345,13 @@
           const shuffled = pool.sort(() => 0.5 - Math.random());
           picked = shuffled.slice(0, 4);
 
-          // 万が一4個未満の場合は補填
           if (picked.length < 4) {
             const extra = eventsData.filter(e => !picked.includes(e)).sort(() => 0.5 - Math.random());
             picked = picked.concat(extra.slice(0, 4 - picked.length));
           }
         }
 
-        // 正しい順番（sort_order順）
         const correctOrder = [...picked].sort((a, b) => a.sort_order - b.sort_order);
-
-        // 出題用にシャッフル（初期表示順）
         let initialOrder = [...picked].sort(() => 0.5 - Math.random());
 
         questions.push({
@@ -408,7 +361,7 @@
       }
     }
 
-    // 問題の表示
+    // 問題表示
     function showQuestion() {
       screenFeedback.classList.add('hidden');
       screenQuiz.classList.remove('hidden');
@@ -440,7 +393,7 @@
       setupArrowButtons();
     }
 
-    // 上下ボタンによる並び替え
+    // 上下ボタン
     function setupArrowButtons() {
       const quizList = document.getElementById('quiz-list');
       
@@ -449,9 +402,7 @@
           e.stopPropagation();
           const item = e.target.closest('.quiz-item');
           const prev = item.previousElementSibling;
-          if (prev) {
-            quizList.insertBefore(item, prev);
-          }
+          if (prev) quizList.insertBefore(item, prev);
         });
       });
 
@@ -460,20 +411,18 @@
           e.stopPropagation();
           const item = e.target.closest('.quiz-item');
           const next = item.nextElementSibling;
-          if (next) {
-            quizList.insertBefore(next, item);
-          }
+          if (next) quizList.insertBefore(next, item);
         });
       });
     }
 
-    // ドラッグ＆ドロップ実装
+    // ドラッグ＆ドロップ
     function setupDragAndDrop() {
       const quizList = document.getElementById('quiz-list');
       let draggedItem = null;
 
       quizList.querySelectorAll('.quiz-item').forEach(item => {
-        item.addEventListener('dragstart', (e) => {
+        item.addEventListener('dragstart', () => {
           draggedItem = item;
           item.classList.add('dragging');
         });
@@ -508,7 +457,7 @@
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    // 4. 解答チェックと解説表示
+    // 回答判定
     document.getElementById('btn-submit-answer').addEventListener('click', () => {
       const currentList = document.getElementById('quiz-list');
       const userOrderIds = [...currentList.querySelectorAll('.quiz-item')].map(el => el.dataset.id);
@@ -519,7 +468,6 @@
       const isCorrect = JSON.stringify(userOrderIds) === JSON.stringify(correctIds);
       if (isCorrect) score++;
 
-      // フィードバック表示
       screenQuiz.classList.add('hidden');
       screenFeedback.classList.remove('hidden');
 
@@ -532,7 +480,6 @@
         badge.className = 'result-badge badge-wrong';
       }
 
-      // 模範解答リスト生成
       const feedbackList = document.getElementById('feedback-list');
       feedbackList.innerHTML = '';
 
@@ -551,13 +498,12 @@
       });
     });
 
-    // 次の問題へ / 結果画面へ
+    // 次の問題 / 結果
     document.getElementById('btn-next-question').addEventListener('click', () => {
       currentQuestionIndex++;
       if (currentQuestionIndex < 5) {
         showQuestion();
       } else {
-        // 結果発表
         screenFeedback.classList.add('hidden');
         screenResult.classList.remove('hidden');
         document.getElementById('final-score').textContent = `5 問中 ${score} 問正解！`;

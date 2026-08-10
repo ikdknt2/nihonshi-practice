@@ -312,7 +312,7 @@
     const screenResult = document.getElementById('screen-result');
     const screenBrowse = document.getElementById('screen-browse');
 
-    // 初期データの読み込み
+    // 初期データの読み込み（エラー詳細表示付き）
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const [eventsRes, expRes] = await Promise.all([
@@ -320,7 +320,12 @@
           fetch('./explanations.json')
         ]);
 
-        if (!eventsRes.ok || !expRes.ok) throw new Error('JSON取得失敗');
+        if (!eventsRes.ok) {
+          throw new Error(`events.json の取得失敗 (ステータス: ${eventsRes.status})`);
+        }
+        if (!expRes.ok) {
+          throw new Error(`explanations.json の取得失敗 (ステータス: ${expRes.status})`);
+        }
 
         eventsData = await eventsRes.json();
         const expArray = await expRes.json();
@@ -336,7 +341,16 @@
         screenLoading.classList.add('hidden');
         screenSetup.classList.remove('hidden');
       } catch (err) {
-        screenLoading.innerHTML = '<p style="color: red;">JSONデータの読み込みに失敗しました。</p>';
+        const errorMessage = err.message || err;
+        alert("エラーが発生しました:\n" + errorMessage);
+        screenLoading.innerHTML = `
+          <p style="color: red; font-weight: bold; text-align: left;">
+            【読み込みエラー】<br>${errorMessage}<br><br>
+            ・ファイル名が正しいか（小文字/拡張子）<br>
+            ・同じフォルダ内にあるか<br>
+            を確認してください。
+          </p>
+        `;
         console.error(err);
       }
     });

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>歴史並び替えトレーニング</title>
+  <!-- SortableJS (アニメーション付きドラッグ＆ドロップ用) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -107,26 +109,24 @@
       padding: 12px;
       cursor: grab;
       user-select: none;
+      touch-action: manipulation;
     }
 
-    .quiz-item.dragging {
-      opacity: 0.5;
+    .quiz-item:active {
+      cursor: grabbing;
+    }
+
+    .sortable-ghost {
+      opacity: 0.4;
       background: #e8f4fc;
+      border-style: dashed;
+    }
+
+    .sortable-drag {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     .quiz-item .title { font-weight: bold; flex-grow: 1; }
-
-    .controls { display: flex; gap: 4px; }
-
-    .btn-arrow {
-      background: #eee;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 4px 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .btn-arrow:hover { background: #ddd; }
 
     .result-badge {
       display: inline-block;
@@ -303,6 +303,7 @@
     let questions = [];
     let score = 0;
     let lastUserAnswerTitles = [];
+    let sortableInstance = null;
 
     const screenLoading = document.getElementById('screen-loading');
     const screenSetup = document.getElementById('screen-setup');
@@ -452,84 +453,22 @@
       q.initialOrder.forEach((item) => {
         const div = document.createElement('div');
         div.className = 'quiz-item';
-        div.draggable = true;
         div.dataset.id = item.id;
 
-        div.innerHTML = `
-          <span class="title">${item.title}</span>
-          <div class="controls">
-            <button class="btn-arrow btn-up">▲</button>
-            <button class="btn-arrow btn-down">▼</button>
-          </div>
-        `;
+        div.innerHTML = `<span class="title">${item.title}</span>`;
         quizList.appendChild(div);
       });
 
-      setupDragAndDrop();
-      setupArrowButtons();
-    }
+      // SortableJS の適用（旧インスタンスを破棄してカチッとハマる動作へ更新）
+      if (sortableInstance) {
+        sortableInstance.destroy();
+      }
 
-    // 上下ボタン
-    function setupArrowButtons() {
-      const quizList = document.getElementById('quiz-list');
-      quizList.querySelectorAll('.btn-up').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const item = e.target.closest('.quiz-item');
-          const prev = item.previousElementSibling;
-          if (prev) quizList.insertBefore(item, prev);
-        });
+      sortableInstance = new Sortable(quizList, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag'
       });
-
-      quizList.querySelectorAll('.btn-down').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const item = e.target.closest('.quiz-item');
-          const next = item.nextElementSibling;
-          if (next) quizList.insertBefore(next, item);
-        });
-      });
-    }
-
-    // ドラッグ＆ドロップ
-    function setupDragAndDrop() {
-      const quizList = document.getElementById('quiz-list');
-      let draggedItem = null;
-
-      quizList.querySelectorAll('.quiz-item').forEach(item => {
-        item.addEventListener('dragstart', () => {
-          draggedItem = item;
-          item.classList.add('dragging');
-        });
-
-        item.addEventListener('dragend', () => {
-          draggedItem = null;
-          item.classList.remove('dragging');
-        });
-      });
-
-      quizList.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(quizList, e.clientY);
-        if (afterElement == null) {
-          quizList.appendChild(draggedItem);
-        } else {
-          quizList.insertBefore(draggedItem, afterElement);
-        }
-      });
-    }
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.quiz-item:not(.dragging)')];
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
     // 回答判定
